@@ -1,0 +1,134 @@
+name: "X Resource Defaults"
+scopeName: "source.xdefaults"
+fileTypes: [
+	"XErrorDB"
+	"Xdefaults"
+	"Xres"
+	"Xresources"
+	"X11/app-defaults/*"
+]
+firstLineMatch: """(?x)
+	# Emacs modeline
+	-\\*-(?i:[ \\t]*(?=[^:;\\s]+[ \\t]*-\\*-)|(?:.*?[ \\t;]|(?<=-\\*-))[ \\t]*mode[ \\t]*:[ \\t]*)
+		(?i:conf-xdefaults)
+	(?=[ \\t;]|(?<![-*])-\\*-).*?-\\*-
+
+	|
+
+	# Vim modeline
+	(?:(?:^|[ \\t])(?:vi|Vi(?=m))(?:m[<=>]?[0-9]+|m)?|[ \\t]ex)(?=:(?=[ \\t]*set?[ \\t][^\\r\\n:]+:)|:(?![ \\t]*set?[ \\t]))
+	(?:(?:[ \\t]*:[ \\t]*|[ \\t])\\w*(?:[ \\t]*=(?:[^\\\\\\s]|\\\\.)*)?)*[ \\t:]
+	(?:filetype|ft|syntax)[ \\t]*=
+		(?i:xdefaults)
+	(?=$|\\s|:)
+"""
+patterns: [include: "#main"]
+
+repository:
+	main:
+		patterns: [
+			{include: "#comment"}
+			{include: "#include"}
+			{include: "#resource"}
+		]
+
+
+	# Comment line, introduced by an exclamation mark in the first column
+	comment:
+		name:  "comment.line.bang.exclamation-mark.xdefaults"
+		begin: "^!"
+		end:   "$"
+		beginCaptures:
+			0: name: "punctuation.definition.comment.xdefaults"
+
+
+	# Escape sequences recognised within resource values
+	esc:
+		patterns: [{
+			# Escaped backslash
+			name:  "constant.character.escape.backslash.xdefaults"
+			match: "(\\\\)\\\\"
+			captures:
+				1: name: "punctuation.definition.escape.backslash.xdefaults"
+		},{
+			# Character specified by its octal character code
+			name:  "constant.character.escape.codepoint.octal.xdefaults"
+			match: "(\\\\)[0-7]{3}"
+			captures:
+				1: name: "punctuation.definition.escape.backslash.xdefaults"
+		},{
+			# Escaped space or horizontal tab character
+			name:  "constant.character.escape.whitespace.xdefaults"
+			match: "(\\\\)[ \\t]"
+			captures:
+				1: name: "punctuation.definition.escape.backslash.xdefaults"
+		},{
+			# Embedded newline character
+			name:  "constant.character.escape.newline.xdefaults"
+			match: "(\\\\)n"
+			captures:
+				1: name: "punctuation.definition.escape.backslash.xdefaults"
+		},{
+			# Line continuation; unlike ‘\n’, will be removed from the final value
+			name:  "constant.character.escape.line-continuation.xdefaults"
+			begin: "(\\\\)$[ \\r\\n]?"
+			end:   "^"
+			beginCaptures:
+				1: name: "punctuation.definition.escape.backslash.xdefaults"
+		}]
+
+
+	# Embed another X resources file
+	include:
+		name:  "meta.preprocessor.include.xdefaults"
+		begin: "^(#)\\s*include[ \\s]*"
+		end:   "(?=\\s*$)"
+		beginCaptures:
+			0: name: "keyword.control.directive.include.xdefaults"
+			1: name: "punctuation.definition.directive.xdefaults"
+		contentName: "string.other.link.filename.xdefaults"
+
+
+	# Component name bindings
+	binding:
+		match: "[.*]"
+		captures: 0: patterns: [{
+			name: "keyword.operator.binding.loose.xdefaults"
+			match: "\\*"
+			captures:
+				0: name: "sublimelinter.gutter-mark"
+		},{
+			name: "keyword.operator.binding.tight.xdefaults"
+			match: "\\."
+			captures:
+				0: name: "sublimelinter.gutter-mark"
+		}]
+
+
+	# X resource specification
+	resource:
+		name:  "meta.resource.xdefaults"
+		begin: "^\\s*[.*]?(?:(?:\\?|[-\\w+]+)[.*])*[-\\w+]+\\s*:[ \\t]*"
+		end:   "(?<!\\\\)$"
+		beginCaptures: 0: patterns: [
+			{include: "#binding"}
+			{match: "\\?",     name: "keyword.operator.wildcard.xdefaults"}
+			{match: "[-\\w]+", name: "entity.name.tag.component.xdefaults"}
+			{match: ":",       name: "keyword.operator.assignment.xdefaults"}
+		]
+		patterns: [include: "#value"]
+
+
+	value:
+		patterns: [{
+			# X logical font description
+			match: "\\G\\s*(-[^\\s\\\\]+)$"
+			captures:
+				1: patterns: [include: "source.xlfd#name"]
+		},{
+			# Boolean keyword
+			match: "(?i)\\G\\s*(?:(on|true|yes)|(off|no|false))(?=\\s*$)"
+			captures:
+				1: name: "constant.language.boolean.true.xdefaults"
+				2: name: "constant.language.boolean.false.xdefaults"
+		}, include: "#esc"]

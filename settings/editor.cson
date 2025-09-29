@@ -1,0 +1,4 @@
+".source.xdefaults":
+	editor:
+		commentStart: "! "
+		tabLength: 8

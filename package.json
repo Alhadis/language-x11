@@ -1,0 +1,9 @@
+{
+	"name": "langauge-x11",
+	"version": "v0.0.0",
+	"description": "Syntax highlighting for X11-related configuration files.",
+	"repository": "https://github.com/Alhadis/language-x11",
+	"author": "John Gardner <gardnerjohng@gmail.com>",
+	"license": "ISC",
+	"engines": {"atom": "*"}
+}
