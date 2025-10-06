@@ -35,7 +35,7 @@ repository:
 	main:
 		patterns: [
 			{include: "#comment"}
-			{include: "#include"}
+			{include: "#pragmata"}
 			{include: "#resource"}
 		]
 
@@ -149,6 +149,9 @@ repository:
 
 
 	# Comment line, introduced by an exclamation mark in the first column
+	# NB: According to Vim's “xdefaults.vim” syntax, C-style comments should be ignored by xrdb(1);
+	# however, this is undocumented functionality reported from ~2006, and it's wise to assume this
+	# isn't set in stone. Hence, we only support the standard comment syntax.
 	comment:
 		name:  "comment.line.bang.exclamation-mark.xdefaults"
 		begin: "^!"
@@ -193,15 +196,94 @@ repository:
 		}]
 
 
-	# Embed another X resources file
-	include:
-		name:  "meta.preprocessor.include.xdefaults"
-		begin: "^(#)\\s*include[ \\s]*"
-		end:   "(?=\\s*$)"
-		beginCaptures:
-			0: name: "keyword.control.directive.include.xdefaults"
-			1: name: "punctuation.definition.directive.xdefaults"
-		contentName: "string.other.link.filename.xdefaults"
+	# C-like preprocessor directives
+	pragmata:
+		patterns: [{
+			# Embed another X resources file
+			name:  "meta.preprocessor.include.xdefaults"
+			begin: "^(#)\\s*include[ \\s]*"
+			end:   "(?=\\s*$)"
+			beginCaptures:
+				0: name: "keyword.control.directive.include.xdefaults"
+				1: name: "punctuation.definition.directive.xdefaults"
+			contentName: "string.other.link.filename.xdefaults"
+		},{
+			# Blocks of code commented-out using “#if 0”
+			include: "source.c#preprocessor-rule-disabled-block"
+		},{
+			# Conditional: “#if COND … [#elsif COND] … #endif”
+			begin: "^((#)\\s*(if(?:n?def)?))(?=$|\\s)(\\s+[^\\r\\n].*$)?"
+			end:   "^((#)\\s*endif)(?=$|\\s)"
+			beginCaptures:
+				0: name: "meta.preprocessor.conditional.$3.xdefaults"
+				1: name: "keyword.control.directive.conditional.xdefaults"
+				2: name: "punctuation.definition.directive.xdefaults"
+				4: patterns: [include: "source.c#preprocessor-rule-conditional-line"]
+			endCaptures:
+				0: name: "meta.preprocessor.conditional.endif.xdefaults"
+				1: name: "keyword.control.directive.conditional.xdefaults"
+				2: name: "punctuation.definition.directive.xdefaults"
+			patterns: [{
+				name: "meta.preprocessor.conditional.$3.xdefaults"
+				match: "^((#)\\s*(elif|else))(?=$|\\s)(\\s+[^\\r\\n].*$)?"
+				captures:
+					1: name: "keyword.control.directive.conditional.xdefaults"
+					2: name: "punctuation.definition.directive.xdefaults"
+					4: patterns: [include: "source.c#preprocessor-rule-conditional-line"]
+			}, include: "#main"]
+		},{
+			# Define a constant or function-like macro
+			name:  "meta.preprocessor.macro.xdefaults"
+			begin: "^((#)\\s*(define|undef))\\s+(?!\\d)([\\w$]+)((\\()([\\w$,\\s]*(?:\\.{3})?)(\\)))?"
+			end:   "\\s*(//[^\\r\\n]*|/\\*.*\\*/)|(?<!\\\\)$"
+			patterns: [
+				{include: "source.c#preprocessor-rule-define-line-contents"}
+				{include: "source.c"}
+			]
+			contentName: "source.embedded.c"
+			beginCaptures:
+				1: name: "keyword.control.directive.$3.xdefaults"
+				2: name: "punctuation.definition.directive.xdefaults"
+				4: name: "entity.name.function.preprocessor.xdefaults"
+				5: name: "meta.parameters.xdefaults"
+				6: name: "punctuation.definition.parameters.begin.xdefaults"
+				8: name: "punctuation.definition.parameters.end.xdefaults"
+				7: patterns: [
+					{match: ",",       name: "punctuation.separator.parameters.comma.xdefaults"}
+					{match: "[\\w$]+", name: "variable.parameter.preprocessor.xdefaults"}
+					{include: "source.c#vararg_ellipses"}
+				]
+			endCaptures:
+				1: patterns: [include: "source.c#comments"]
+		},{
+			# Other pragma directives with questionable usage
+			name:  "meta.preprocessor.$3.xdefaults"
+			begin: "^((#)\\s*(error|line|pragma|warning|warn))(?=$|\\s)"
+			end:   "\\s*(//[^\\r\\n]*|/\\*.*\\*/)|(?<!\\\\)$"
+			beginCaptures:
+				1: name: "keyword.control.directive.$3.xdefaults"
+				2: name: "punctuation.definition.directive.xdefaults"
+			endCaptures:
+				1: patterns: [include: "source.c#comments"]
+			contentName: "source.embedded.c"
+			patterns: [{
+				begin: "(?<=pragma)\\G"
+				end:   "(?=\\s*(?://|/\\*))|(?<!\\\\)$"
+				patterns: [{
+					# Unquoted keyword
+					name: "entity.other.attribute-name.pragma.preprocessor.c"
+					match: "(?!-|\\d)[-\\w$]+"
+				}, include: "#pragmaInnards"]
+			}, include: "#pragmaInnards"]
+		}]
+
+	# Stuff matched inside miscellaneous preprocessor directives
+	pragmaInnards:
+		patterns: [
+			{include: "#esc"}
+			{include: "source.c#numbers"}
+			{include: "source.c#strings"}
+		]
 
 
 	# Component name bindings

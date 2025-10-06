@@ -1,0 +1,26 @@
+! vim: ft=xdefaults
+
+#define PI 3 // https://youtu.be/L1eegVTwDS0
+#define SUM(a, b) (a + b)
+
+#if SUM(PI, PI) == 6
+*Foreground: Red
+#endif
+
+#ifdef TERM_PROGRAM
+*Foreground: Blue
+#else
+*Foreground: Green
+#endif
+
+#undef PI // Comment
+#ifndef PI
+*Foreground: grey
+#endif
+
+
+#pragma once // Comment
+#line 3 // Comment
+#warning "These examples are stupid" // Comment
+#warn "Avoid using at all costs" // Comment
+#error "CPU not found, you shouldn't even be reading this" // Comment
