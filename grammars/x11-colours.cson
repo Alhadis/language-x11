@@ -1,0 +1,184 @@
+# Reference: en.wikipedia.org/wiki/X11_colour_names
+name: "X11 Colour Names"
+scopeName: "source.x11-colours"
+fileTypes: ["X11/rgb.txt"]
+patterns: [include: "#main"]
+
+repository:
+	main:
+		patterns: [
+			{include: "#definition"}
+		]
+
+
+	# RGB components followed by a colour name separated by tabs
+	definition:
+		name:  "meta.definition.colour.x11-colours"
+		match: "^\\s*(\\d+)\\s+(\\d+)\\s+(\\d+) *\\t+ *(\\S[^\\t]*) *$"
+		captures:
+			1: name: "constant.numeric.integer.decimal.colour-component.red.x11-colours"
+			2: name: "constant.numeric.integer.decimal.colour-component.green.x11-colours"
+			3: name: "constant.numeric.integer.decimal.colour-component.blue.x11-colours"
+			4: patterns: [
+				{include: "#names"}
+
+				# Unrecognised colour name; possibly added by user
+				name: "keyword.other.colour-name.user-defined.x11-colours"
+				match: "^\\S.*$"
+			]
+
+
+	# Predefined colour names
+	names:
+		name: "keyword.other.colour-name.x11-colours"
+		match: """(?xi) \\b
+			((?: antique\\x20?white
+			| aquamarine
+			| azure
+			| bisque
+			| blue
+			| brown
+			| burlywood
+			| cadet\\x20?blue
+			| chartreuse
+			| chocolate
+			| coral
+			| cornsilk
+			| cyan
+			| dark\\x20?goldenrod
+			| dark\\x20?olive\\x20?green
+			| dark\\x20?orange
+			| dark\\x20?orchid
+			| dark\\x20?sea\\x20?green
+			| dark\\x20?slate\\x20?gr[ae]y
+			| deep\\x20?pink
+			| deep\\x20?sky\\x20?blue
+			| dodger\\x20?blue
+			| firebrick
+			| goldenrod
+			| gold
+			| green
+			| honeydew
+			| hot\\x20?pink
+			| indian\\x20?red
+			| ivory
+			| khaki
+			| lavender\\x20?blush
+			| lemon\\x20?chiffon
+			| light\\x20?blue
+			| light\\x20?cyan
+			| light\\x20?goldenrod
+			| light\\x20?pink
+			| light\\x20?salmon
+			| light\\x20?sky\\x20?blue
+			| light\\x20?steel\\x20?blue
+			| light\\x20?yellow
+			| magenta
+			| maroon
+			| medium\\x20?orchid
+			| medium\\x20?purple
+			| misty\\x20?rose
+			| navajo\\x20?white
+			| olive\\x20?drab
+			| orange\\x20?red
+			| orange
+			| orchid
+			| pale\\x20?green
+			| pale\\x20?turquoise
+			| palevioletred
+			| peach\\x20?puff
+			| pink
+			| plum
+			| purple
+			| red
+			| rosy\\x20?brown
+			| royal\\x20?blue
+			| salmon
+			| sea\\x20?green
+			| seashell
+			| sienna
+			| sky\\x20?blue
+			| slate\\x20?blue
+			| slate\\x20?gr[ae]y
+			| snow
+			| spring\\x20?green
+			| steel\\x20?blue
+			| tan
+			| thistle
+			| tomato
+			| turquoise
+			| violet\\x20?red
+			| wheat
+			| yellow
+			) [1-4]?
+			| alice\\x20?blue
+			| aqua
+			| beige
+			| black
+			| blanched\\x20?almond
+			| blue\\x20?violet
+			| cornflower\\x20?blue
+			| crimson
+			| dark\\x20?blue
+			| dark\\x20?cyan
+			| dark\\x20?gr[ae]y
+			| dark\\x20?green
+			| dark\\x20?khaki
+			| dark\\x20?magenta
+			| dark\\x20?red
+			| dark\\x20?salmon
+			| dark\\x20?slate\\x20?blue
+			| dark\\x20?turquoise
+			| dark\\x20?violet
+			| dim\\x20?gr[ae]y
+			| floral\\x20?white
+			| forest\\x20?green
+			| fuchsia
+			| gainsboro
+			| ghost\\x20?white
+			| gr[ae]y(?:100|[1-9]\\d|\\d)?
+			| green\\x20?yellow
+			| indigo
+			| lavender
+			| lawn\\x20?green
+			| light\\x20?coral
+			| light\\x20?goldenrod\\x20?yellow
+			| light\\x20?gr[ae]y
+			| light\\x20?green
+			| light\\x20?sea\\x20?green
+			| light\\x20?slate\\x20?blue
+			| light\\x20?slate\\x20?gr[ae]y
+			| lime\\x20?green
+			| lime
+			| linen
+			| medium\\x20?aquamarine
+			| medium\\x20?blue
+			| medium\\x20?sea\\x20?green
+			| medium\\x20?slate\\x20?blue
+			| medium\\x20?spring\\x20?green
+			| medium\\x20?turquoise
+			| medium\\x20?violet\\x20?red
+			| midnight\\x20?blue
+			| mint\\x20?cream
+			| moccasin
+			| navy\\x20?blue
+			| navy
+			| old\\x20?lace
+			| olive
+			| pale\\x20?goldenrod
+			| pale\\x20?violet\\x20?red
+			| papaya\\x20?whip
+			| peru
+			| powder\\x20?blue
+			| rebecca\\x20?purple
+			| saddle\\x20?brown
+			| sandy\\x20?brown
+			| silver
+			| teal
+			| violet
+			| (?:web|x11)\\x20?(?:gr[ae]y|green|maroon|purple)
+			| white\\x20?smoke
+			| white
+			| yellow\\x20?green
+			)\\b
+		"""

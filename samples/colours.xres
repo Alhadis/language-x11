@@ -1,0 +1,33 @@
+! RGB device specifications
+Black:   rgb:0/0/0
+Red:     rgb:ffff/0/0
+Green:   rgb:0/ffff/0
+Blue:    rgb:0/0/ffff
+Yellow:  rgb:ffff/ffff/0
+Magenta: rgb:ffff/0/ffff
+Cyan:    rgb:0/ffff/ffff
+White:   rgb:ffff/ffff/ffff
+
+! RGB intensity specifications
+Black:   rgbi:0.0/0.0/0.0
+Red:     rgbi:1.0/0/0
+Green:   rgbi:0/1.0/0
+Blue:    rgbi:0/0/1.0
+Yellow:  rgbi:1.0/1.0/0
+Magenta: rgbi:1.0/0/1.0
+Cyan:    rgbi:0/1.0/1.0
+White:   rgbi:1.0/1.0/1.0
+
+! Device-independent colour spaces
+Black:   CIEXYZ:0/0/0
+Black:   CIEuvY:0/0/0
+Black:   CIExyY:0/0/0
+Black:   CIELab:0/0/0
+Black:   CIELuv:0/0/0
+Black:   TekHVC:0/0/0
+
+! Legacy syntax for RGB device specifications
+Red: #F00
+Red: #FF0000
+Red: #FFF000000
+Red: #FFFF00000000

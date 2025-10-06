@@ -2,3 +2,8 @@
 	editor:
 		commentStart: "! "
 		tabLength: 8
+
+".source.rgb-colours":
+	editor:
+		softTabs: false
+		tabLength: 8
