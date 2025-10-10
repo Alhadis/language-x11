@@ -286,22 +286,6 @@ repository:
 		]
 
 
-	# Component name bindings
-	binding:
-		match: "[.*]"
-		captures: 0: patterns: [{
-			name: "keyword.operator.binding.loose.xdefaults"
-			match: "\\*"
-			captures:
-				0: name: "punctuation.separator.asterisk.binding.xdefaults"
-		},{
-			name: "keyword.operator.binding.tight.xdefaults"
-			match: "\\."
-			captures:
-				0: name: "punctuation.separator.period.binding.xdefaults"
-		}]
-
-
 	# X logical font description
 	font:
 		match: "\\G\\s*([*-][^\\s\\\\]+)$"
@@ -377,14 +361,31 @@ repository:
 	# X resource specification
 	resource:
 		name:  "meta.resource.xdefaults"
-		begin: "^\\s*[.*]?(?:(?:\\?|[-\\w+]+)[.*])*[-\\w+]+\\s*:[ \\t]*"
+		begin: "^\\s*([.*]?(?:(?:\\?|(?!\\s)[^?.*:]+)[.*])*(?!\\s)[^?.*:]+)(?<!\\s)\\s*(:)[ \\t]*"
 		end:   "(?<!\\\\)$"
-		beginCaptures: 0: patterns: [
-			{include: "#binding"}
-			{match: "\\?",     name: "keyword.operator.wildcard.xdefaults"}
-			{match: "[-\\w]+", name: "entity.name.tag.component.xdefaults"}
-			{match: ":",       name: "keyword.operator.assignment.xdefaults"}
-		]
+		beginCaptures:
+			1: patterns: [{
+				# Loose binding
+				name: "keyword.operator.binding.loose.xdefaults"
+				match: "\\*"
+				captures:
+					0: name: "punctuation.separator.asterisk.binding.xdefaults"
+			},{
+				# Tight binding
+				name: "keyword.operator.binding.tight.xdefaults"
+				match: "\\."
+				captures:
+					0: name: "punctuation.separator.period.binding.xdefaults"
+			},{
+				# Wildcard
+				name: "keyword.operator.wildcard.xdefaults"
+				match: "\\?"
+			},{
+				# Component name
+				name: "entity.name.tag.component.xdefaults"
+				match: "(?!\\s)[^?.*:]+"
+			}]
+			2: name: "keyword.operator.assignment.xdefaults"
 		patterns: [include: "#value"]
 
 
